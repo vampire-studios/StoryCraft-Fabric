@@ -9,6 +9,7 @@ import net.minecraft.client.render.entity.MobEntityRenderer;
 import net.minecraft.client.render.entity.model.PlayerEntityModel;
 import net.minecraft.client.texture.NativeImage;
 import net.minecraft.client.texture.NativeImageBackedTexture;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.Identifier;
 
 import javax.imageio.ImageIO;
@@ -25,7 +26,7 @@ public class FamiliarsEntityRenderer extends MobEntityRenderer<FamiliarsEntity, 
     }
 
     @Override
-    protected Identifier getTexture(FamiliarsEntity entity) {
+    public Identifier getTexture(FamiliarsEntity entity) {
         if (this.getRenderManager().textureManager.getTexture(new Identifier("minecraft:dynamic/" + entity.getDataTracker().get(FamiliarsEntity.serverUUID) + "_1")) != null) {
             return new Identifier("minecraft:dynamic/" + entity.getDataTracker().get(FamiliarsEntity.serverUUID) + "_1");
         }
@@ -50,13 +51,13 @@ public class FamiliarsEntityRenderer extends MobEntityRenderer<FamiliarsEntity, 
     }
 
     @Override
-    protected void scale(FamiliarsEntity livingEntity_1, float float_1) {
+    protected void scale(FamiliarsEntity entity, MatrixStack matrices, float tickDelta) {
         float float_2 = 0.9375F;
-        if (livingEntity_1.isBaby()) {
+        if (entity.isBaby()) {
             float_2 = (float) ((double) float_2 * 0.5D);
-            this.field_4673 = 0.25F;
+            this.shadowSize = 0.25F;
         } else {
-            this.field_4673 = 0.5F;
+            this.shadowSize = 0.5F;
         }
 
         GlStateManager.scalef(float_2, float_2, float_2);

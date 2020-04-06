@@ -2,7 +2,7 @@ package io.github.paradoxicalblock.storycraft.entity.ai.goal;
 
 import io.github.paradoxicalblock.storycraft.entity.FamiliarsEntity;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.ai.PathfindingUtil;
+import net.minecraft.entity.ai.TargetFinder;
 import net.minecraft.entity.ai.goal.Goal;
 import net.minecraft.util.math.Vec3d;
 
@@ -24,10 +24,10 @@ public class VillagerStareGoal extends Goal {
     public boolean canStart() {
         if (this.owner.getBreedingAge() >= 0) {
             return false;
-        } else if (this.owner.getRand().nextInt(400) != 0) {
+        } else if (this.owner.getRandom().nextInt(400) != 0) {
             return false;
         } else {
-            List<FamiliarsEntity> list_1 = this.owner.world.getEntities(FamiliarsEntity.class, this.owner.getBoundingBox().expand(6.0D, 3.0D, 6.0D));
+            List<FamiliarsEntity> list_1 = this.owner.world.getNonSpectatingEntities(FamiliarsEntity.class, this.owner.getBoundingBox().expand(6.0D, 3.0D, 6.0D));
             double double_1 = Double.MAX_VALUE;
 
             for (FamiliarsEntity villagerEntity_1 : list_1) {
@@ -41,7 +41,7 @@ public class VillagerStareGoal extends Goal {
             }
 
             if (this.target == null) {
-                Vec3d vec3d_1 = PathfindingUtil.findTarget(this.owner, 16, 3);
+                Vec3d vec3d_1 = TargetFinder.findTarget(this.owner, 16, 3);
                 return vec3d_1 != null;
             }
 
@@ -73,7 +73,7 @@ public class VillagerStareGoal extends Goal {
                 this.owner.getNavigation().startMovingTo(this.target, this.speed);
             }
         } else if (this.owner.getNavigation().isIdle()) {
-            Vec3d vec3d_1 = PathfindingUtil.findTarget(this.owner, 16, 3);
+            Vec3d vec3d_1 = TargetFinder.findTarget(this.owner, 16, 3);
             if (vec3d_1 == null) {
                 return;
             }
