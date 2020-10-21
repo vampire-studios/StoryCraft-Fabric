@@ -66,7 +66,7 @@ public class FindDiamondBlockGoal extends MoveToTargetPosGoal {
             owner.playSound(SoundEvents.BLOCK_STONE_BREAK, 1.0F, 1.0F);
             world_1.breakBlock(this.targetPos, false);
             world_1.spawnEntity(new ItemEntity(world_1, targetPos.getX(), targetPos.getY(), targetPos.getZ(), new ItemStack(blockState_1.getBlock().asItem())));
-            this.owner.canPickUp(new ItemStack(blockState_1.getBlock().asItem()));
+            this.owner.canPickupItem(new ItemStack(blockState_1.getBlock().asItem()));
             this.owner.sendPickup(this.owner, 1);
         }
     }
@@ -74,7 +74,7 @@ public class FindDiamondBlockGoal extends MoveToTargetPosGoal {
     public boolean canStart() {
         if (!super.canStart()) {
             return false;
-        } else if (!this.mob.world.getGameRules().getBoolean(GameRules.MOB_GRIEFING)) {
+        } else if (!this.mob.world.getGameRules().getBoolean(GameRules.DO_MOB_GRIEFING)) {
             return false;
         } else {
             return super.canStart();

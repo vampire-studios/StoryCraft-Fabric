@@ -4,7 +4,7 @@ import io.github.paradoxicalblock.storycraft.socialVillager.FamiliarsAspects;
 import io.github.paradoxicalblock.storycraft.socialVillager.FamiliarsGender;
 import io.github.paradoxicalblock.storycraft.socialVillager.FamiliarsProfession;
 import net.minecraft.entity.data.TrackedDataHandler;
-import net.minecraft.util.PacketByteBuf;
+import net.minecraft.network.PacketByteBuf;
 
 public class SCCustomTrackedData {
 

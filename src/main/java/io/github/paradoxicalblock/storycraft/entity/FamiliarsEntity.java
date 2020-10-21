@@ -18,25 +18,27 @@ import net.minecraft.entity.ai.goal.*;
 import net.minecraft.entity.ai.pathing.MobNavigation;
 import net.minecraft.entity.attribute.ClampedEntityAttribute;
 import net.minecraft.entity.attribute.EntityAttribute;
-import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.entity.mob.*;
 import net.minecraft.entity.passive.PassiveEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.inventory.BasicInventory;
+import net.minecraft.inventory.SimpleInventory;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.particle.ParticleEffect;
 import net.minecraft.particle.ParticleTypes;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.LiteralText;
+import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -46,9 +48,9 @@ import java.util.Scanner;
 import java.util.UUID;
 
 public class FamiliarsEntity extends PassiveEntity {
-    public static final EntityAttribute MAX_HUNGER = (new ClampedEntityAttribute(null, "generic.hunger", 100.0D, 0.0D, 100.0D)).setName("Hunger").setTracked(true);
-    public static final EntityAttribute MAX_HAPPY = (new ClampedEntityAttribute(null, "generic.happy", 100.0D, 0.0D, 100.0D)).setName("Happy").setTracked(true);
-    public static final EntityAttribute MAX_INTELLIGENCE = (new ClampedEntityAttribute(null, "generic.intelligence", 100.0D, 0.0D, 100.0D)).setName("Intelligence").setTracked(true);
+    public static final EntityAttribute MAX_HUNGER = new ClampedEntityAttribute("generic.hunger", 100.0D, 0.0D, 100.0D)/*.setName("Hunger")*/.setTracked(true);
+    public static final EntityAttribute MAX_HAPPY = (new ClampedEntityAttribute("generic.happy", 100.0D, 0.0D, 100.0D))/*.setName("Happy")*/.setTracked(true);
+    public static final EntityAttribute MAX_INTELLIGENCE = (new ClampedEntityAttribute("generic.intelligence", 100.0D, 0.0D, 100.0D))/*.setName("Intelligence")*/.setTracked(true);
 
     private static final TrackedData<Integer> HUNGER = DataTracker.registerData(FamiliarsEntity.class, TrackedDataHandlerRegistry.INTEGER);
     private static final TrackedData<Integer> HAPPY = DataTracker.registerData(FamiliarsEntity.class, TrackedDataHandlerRegistry.INTEGER);
@@ -68,7 +70,7 @@ public class FamiliarsEntity extends PassiveEntity {
     public static TrackedData<String> genderUnified = DataTracker.registerData(FamiliarsEntity.class, TrackedDataHandlerRegistry.STRING);
     public static TrackedData<String> professionUnified = DataTracker.registerData(FamiliarsEntity.class, TrackedDataHandlerRegistry.STRING);
     private static TrackedData<String> orientationUnified = DataTracker.registerData(FamiliarsEntity.class, TrackedDataHandlerRegistry.STRING);
-    private final BasicInventory inventory = new BasicInventory(8);
+    private final SimpleInventory inventory = new SimpleInventory(8);
     public String firstName;
     public String lastName;
     private HashMap<UUID, Integer> opinions = new HashMap<>();
@@ -148,7 +150,7 @@ public class FamiliarsEntity extends PassiveEntity {
         this.goalSelector.add(1, new FleeEntityGoal<>(this, PillagerEntity.class, 15.0F, 0.6D, 0.6D));
         this.goalSelector.add(1, new FleeEntityGoal<>(this, IllusionerEntity.class, 12.0F, 0.6D, 0.6D));
         this.goalSelector.add(5, new GoToWalkTargetGoal(this, 0.6D));
-        this.goalSelector.add(9, new GoToEntityGoal(this, PlayerEntity.class, 3.0F, 1.0F));
+        this.goalSelector.add(9, new StopAndLookAtEntityGoal(this, PlayerEntity.class, 3.0F, 1.0F));
         this.goalSelector.add(9, new WanderAroundFarGoal(this, 0.6D));
         this.goalSelector.add(10, new LookAtEntityGoal(this, MobEntity.class, 8.0F));
         this.goalSelector.add(5, new FindDiamondBlockGoal(this, 1.0D));
@@ -163,8 +165,8 @@ public class FamiliarsEntity extends PassiveEntity {
                 this.goalSelector.add(6, new VillagerFarmGoal(this, 0.6D));
             } else if (this.get(professionUnified).equals("Guard")) {
                 this.goalSelector.add(1, new MeleeAttackGoal(this, 1.0D, true));
-                this.goalSelector.add(2, new GoToEntityTargetGoal(this, 0.9D, 32.0F));
-                this.goalSelector.add(2, new WanderAroundPointOfInterestGoal(this, 0.6D));
+                this.goalSelector.add(2, new WanderNearTargetGoal(this, 0.9D, 32.0F));
+                this.goalSelector.add(2, new WanderAroundPointOfInterestGoal(this, 0.6D, false));
                 this.goalSelector.add(3, new MoveThroughVillageGoal(this, 0.6D, false, 4, () -> false));
                 this.goalSelector.add(6, new WanderAroundFarGoal(this, 0.6D));
                 this.goalSelector.add(7, new LookAtEntityGoal(this, PlayerEntity.class, 6.0F));
@@ -181,8 +183,8 @@ public class FamiliarsEntity extends PassiveEntity {
             this.goalSelector.add(8, new VillagerFarmGoal(this, 0.6D));
         } else if (this.profession.equals("Guard")) {
             this.goalSelector.add(1, new MeleeAttackGoal(this, 1.0D, true));
-            this.goalSelector.add(2, new GoToEntityTargetGoal(this, 0.9D, 32.0F));
-            this.goalSelector.add(2, new WanderAroundPointOfInterestGoal(this, 0.6D));
+            this.goalSelector.add(2, new WanderNearTargetGoal(this, 0.9D, 32.0F));
+            this.goalSelector.add(2, new WanderAroundPointOfInterestGoal(this, 0.6D, false));
             this.goalSelector.add(3, new MoveThroughVillageGoal(this, 0.6D, false, 4, () -> false));
             this.goalSelector.add(6, new WanderAroundFarGoal(this, 0.6D));
             this.goalSelector.add(7, new LookAtEntityGoal(this, PlayerEntity.class, 6.0F));
@@ -223,13 +225,13 @@ public class FamiliarsEntity extends PassiveEntity {
         return this;
     }
 
-    @Override
+    /*@Override
     protected void initAttributes() {
         super.initAttributes();
         this.getAttributeInstance(EntityAttributes.MOVEMENT_SPEED).setBaseValue(0.5D);
-    }
+    }*/
 
-    public BasicInventory getInventory() {
+    public SimpleInventory getInventory() {
         return this.inventory;
     }
 
@@ -245,8 +247,8 @@ public class FamiliarsEntity extends PassiveEntity {
     private boolean hasEnoughFood(int int_1) {
         boolean boolean_1 = this.profession.equals("Farmer");
 
-        for (int int_2 = 0; int_2 < this.getInventory().getInvSize(); ++int_2) {
-            ItemStack itemStack_1 = this.getInventory().getInvStack(int_2);
+        for (int int_2 = 0; int_2 < this.getInventory().getMaxCountPerStack(); ++int_2) {
+            ItemStack itemStack_1 = this.getInventory().getStack(int_2);
             Item item_1 = itemStack_1.getItem();
             int int_3 = itemStack_1.getCount();
             if (item_1 == Items.BREAD && int_3 >= 3 * int_1 || item_1 == Items.POTATO && int_3 >= 12 * int_1 || item_1 == Items.CARROT && int_3 >= 12 * int_1 || item_1 == Items.BEETROOT && int_3 >= 12 * int_1) {
@@ -262,8 +264,8 @@ public class FamiliarsEntity extends PassiveEntity {
     }
 
     public boolean hasSeed() {
-        for (int int_1 = 0; int_1 < this.getInventory().getInvSize(); ++int_1) {
-            Item item_1 = this.getInventory().getInvStack(int_1).getItem();
+        for (int int_1 = 0; int_1 < this.getInventory().getMaxCountPerStack(); ++int_1) {
+            Item item_1 = this.getInventory().getStack(int_1).getItem();
             if (item_1 == Items.WHEAT_SEEDS || item_1 == Items.POTATO || item_1 == Items.CARROT || item_1 == Items.BEETROOT_SEEDS) {
                 return true;
             }
@@ -316,13 +318,13 @@ public class FamiliarsEntity extends PassiveEntity {
     }
 
     @Override
-    public boolean interactMob(PlayerEntity player, Hand hand) {
+    public ActionResult interactMob(PlayerEntity player, Hand hand) {
         if (!opinions.containsKey(player.getUuid())) {
             formOpinion(player);
         }
         MinecraftClient.getInstance().openScreen(new SocialScreen(this, player));
 //        MinecraftClient.getInstance().openScreen(new BaseScreen(new FamiliarsScreen(this, player)));
-        return true;
+        return ActionResult.SUCCESS;
     }
 
     private void setupHair() {
@@ -466,7 +468,7 @@ public class FamiliarsEntity extends PassiveEntity {
     }
 
     @Override
-    public PassiveEntity createChild(PassiveEntity var1) {
+    public @Nullable PassiveEntity createChild(ServerWorld world, PassiveEntity entity) {
         return new FamiliarsEntity(StoryCraft.FAMILIARS, this.world);
     }
 

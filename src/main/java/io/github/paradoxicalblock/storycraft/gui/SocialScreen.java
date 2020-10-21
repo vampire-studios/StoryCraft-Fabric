@@ -11,9 +11,9 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.text.LiteralText;
-import net.minecraft.text.TranslatableText;
+import net.minecraft.text.*;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
 
@@ -26,7 +26,7 @@ public class SocialScreen extends Screen {
     private static final Identifier TEXTURE = new Identifier(StoryCraft.MOD_ID, "textures/gui/quest_villager.png");
     private static PlayerEntity talker;
     private FamiliarsEntity target;
-    private SocialVillagerQuestButton[] questButtons;
+    private final SocialVillagerQuestButton[] questButtons;
     private ButtonWidget getRewardButton;
 
     private Map<HoverChecker, String> hoverChecks = new HashMap<>();
@@ -55,48 +55,48 @@ public class SocialScreen extends Screen {
         for (SocialVillagerQuestButton questButton : questButtons) {
             this.addButton(questButton);
 
-            getRewardButton = new ButtonWidget(300, 130, 70, 20, "Get Reward", var1 -> {
+            getRewardButton = new ButtonWidget(300, 130, 70, 20, new LiteralText("Get Reward"), var1 -> {
                 System.out.println(Registry.ITEM.getId(questButton.quest.getReward().getItemReward().getItem()));
                 talker.dropItem(questButton.quest.getReward().getItemReward().getItem(), 10);
-                talker.addChatMessage(new LiteralText("Testing"), false);
+                talker.sendMessage(new LiteralText("Testing"), false);
             });
         }
     }
 
     @Override
-    public void render(int mouseX, int mouseY, float delta) {
-        this.renderBackground();
+    public void render(MatrixStack stack, int mouseX, int mouseY, float delta) {
+        this.renderBackground(stack);
         ScreenDrawing.rect(TEXTURE, 102, 44, 275, 166, 0.0F, 0.0F, 0.537F, 0.651F, 0xFFFFFFFF);
 
         //blit(x, y, z, u, v, width, height, texHeight, texWidth)
-        this.minecraft.getTextureManager().bindTexture(TEXTURE);
-		blit(107, 62, this.getBlitOffset(), 275.0F, 0.0F, 88, 80, 256, 512);
+        this.client.getTextureManager().bindTexture(TEXTURE);
+		drawTexture(stack, 107, 62, this.getZOffset(), 275.0F, 0.0F, 88, 80, 256, 512);
 
         String name = String.format("%s %s", this.target.firstName, this.target.lastName);
         String namePlusProfession = String.format("%s - %s", name, this.target.getFamiliarsProfession().getProfession());
-        this.font.draw(namePlusProfession, 211, 51, 4210752);
+        this.textRenderer.draw(stack, namePlusProfession, 211, 51, 4210752);
 
         String questTitle = "Quests";
-        this.font.draw(questTitle, 100 + this.font.getStringWidth(questTitle), 51, 4210752);
+        this.textRenderer.draw(stack, questTitle, 100 + this.textRenderer.getWidth(questTitle), 51, 4210752);
 
         String taskTitle = "Tasks";
-        this.font.draw(taskTitle, 100 + this.font.getStringWidth(questTitle), 51, 4210752);
+        this.textRenderer.draw(stack, taskTitle, 100 + this.textRenderer.getWidth(questTitle), 51, 4210752);
 
         for (SocialVillagerQuestButton questButton : questButtons) {
-            questButton.render(mouseX, mouseY, delta);
+            questButton.render(stack, mouseX, mouseY, delta);
 
             if (questButton.getQuest() != null) {
                 for(QuestTask task : questButton.getQuest().getTasks()) {
                     for (int i = 0; i < questButton.getQuest().getTasks().length; i++) {
                         String questName = String.format("Quest: %s", task.getName());
-                        this.font.draw(questName, 140 + this.font.getStringWidth(questName), 65 + i, 4210752);
+                        this.textRenderer.draw(stack, questName, 140 + this.textRenderer.getWidth(questName), 65 + i, 4210752);
 
-                        drawWrappedString(task.getDescription(), 210, 80 + i, 153, 4210752);
+                        drawWrappedString(stack, StringVisitable.plain(task.getDescription()), 210, 80 + i, 153, 4210752);
 
                         i += 50;
                     }
                 }
-                getRewardButton.render(mouseX, mouseY, delta);
+                getRewardButton.render(stack, mouseX, mouseY, delta);
             } else {
 //                String noQuests = "This villager has no quests";
 //                this.font.draw(noQuests, 205, 101, 4210752);
@@ -105,11 +105,11 @@ public class SocialScreen extends Screen {
 
     }
 
-    public void drawWrappedString(String text, int x, int y, int entryWidth, int color) {
-        List<String> strings = font.wrapStringToWidthAsList(text, entryWidth);
-        for (String string : strings) {
-            font.draw(string, x, y, color);
-            y += font.fontHeight + 3;
+    public void drawWrappedString(MatrixStack stack, StringVisitable text, int x, int y, int entryWidth, int color) {
+        List<OrderedText> strings = textRenderer.wrapLines(text, entryWidth);
+        for (OrderedText string : strings) {
+            textRenderer.draw(stack, string.toString(), x, y, color);
+            y += textRenderer.fontHeight + 3;
         }
     }
 
@@ -121,15 +121,13 @@ public class SocialScreen extends Screen {
         private Quest quest;
 
         SocialVillagerQuestButton(int x, int y, Quest quest) {
-            super(x, y, 89, 20, quest != null ? quest.getTask().getName() : "", ButtonWidget::onPress);
+            super(x, y, 89, 20,new LiteralText( quest != null ? quest.getTask().getName() : ""), ButtonWidget::onPress);
             setQuest(quest);
         }
 
         @Override
         public void onPress() {
             System.out.println(quest.getTask().getName());
-
-
         }
 
         public Quest getQuest() {
@@ -139,7 +137,7 @@ public class SocialScreen extends Screen {
         void setQuest(Quest quest) {
             this.quest = quest;
             visible = quest != null;
-            setMessage(quest != null ? quest.getTask().getName() : "");
+            setMessage(new LiteralText(quest != null ? quest.getTask().getName() : ""));
         }
 
     }

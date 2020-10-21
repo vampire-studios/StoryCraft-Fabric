@@ -55,9 +55,9 @@ public class FamiliarsEntityRenderer extends MobEntityRenderer<FamiliarsEntity, 
         float float_2 = 0.9375F;
         if (entity.isBaby()) {
             float_2 = (float) ((double) float_2 * 0.5D);
-            this.shadowSize = 0.25F;
+            this.shadowRadius = 0.25F;
         } else {
-            this.shadowSize = 0.5F;
+            this.shadowRadius = 0.5F;
         }
 
         GlStateManager.scalef(float_2, float_2, float_2);

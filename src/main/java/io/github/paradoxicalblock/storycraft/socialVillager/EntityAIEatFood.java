@@ -1,14 +1,11 @@
-/*
 package io.github.paradoxicalblock.storycraft.socialVillager;
 
-import io.github.paradoxicalblock.storycraft.ItemTagType;
 import io.github.paradoxicalblock.storycraft.entity.FamiliarsEntity;
 import net.minecraft.entity.ai.goal.Goal;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.tangotek.tektopia.ModItems;
-import net.tangotek.tektopia.entities.EntityVillagerTek;
+import net.minecraft.util.Hand;
 
 import java.util.EnumSet;
 import java.util.HashMap;
@@ -21,10 +18,10 @@ public class EntityAIEatFood extends Goal {
     static {
       BiConsumer<FamiliarsEntity, ItemStack> returnBowl = ((v, i) -> {
             ItemStack bowl = new ItemStack(Items.BOWL);
-            if (ModItems.isTaggedItem(i, ItemTagType.VILLAGER)) {
+            /*if (ModItems.isTaggedItem(i, ItemTagType.VILLAGER)) {
                 ModItems.makeTaggedItem(bowl, ItemTagType.VILLAGER);
-            }
-            v.getInventory().add(bowl);
+            }*/
+            v.getInventory().addStack(bowl);
         });
 
         registerFood(Items.APPLE, 12, -1);
@@ -78,21 +75,21 @@ public class EntityAIEatFood extends Goal {
         if (v != null) {
             int happy = food.getHappy(v);
             int hunger = food.getHunger(v);
-            if (v.getHunger() + hunger > v.getMaxHunger()) {
+            /*if (v.getHunger() + hunger > v.getMaxHunger()) {
                 hunger = 1;
             }
 
             if (v.getHappy() + happy > v.getMaxHappy()) {
                 happy = 0;
-            }
+            }*/
 
             int score = hunger;
 
             int happyPotential = happy * 5;
             float happyFactor = 1.0F;
-            if (happyPotential > 0) {
+            /*if (happyPotential > 0) {
                 happyFactor = (v.getMaxHappy() - v.getHappy()) / v.getMaxHappy();
-            }
+            }*/
             score += (int) (happyPotential * happyFactor);
             return Math.max(score, 1);
         }
@@ -105,13 +102,13 @@ public class EntityAIEatFood extends Goal {
     }
 
     public boolean canStart() {
-        if (this.villager.isAITick() && this.villager.isHungry() && !this.villager.isSleeping()) {
+        /*if (this.villager.isAITick() && this.villager.isHungry() && !this.villager.isSleeping()) {
             this.foodItem = this.villager.getInventory().getItem(p -> Integer.valueOf(getFoodScore(p.getItem(), this.villager)));
             if (!this.foodItem.isEmpty()) {
                 return true;
             }
             this.villager.setThought(FamiliarsEntity.VillagerThought.HUNGRY);
-        }
+        }*/
 
 
         return false;
@@ -128,8 +125,13 @@ public class EntityAIEatFood extends Goal {
 
     public void tick() {
         this.eatTime--;
-        if (this.eatTime == 0 &&
-                !this.villager.getInventory().removeItems(p -> ItemStack.areEqualIgnoreDamage(p, this.foodItem), 1).isEmpty()) {
+        if (this.eatTime == 0/* &&
+                !this.villager.getInventory().addListener(new InventoryListener() {
+                    @Override
+                    public void onInvChange(Inventory inventory) {
+
+                    }
+                }).isEmpty()*/) {
 
             VillagerFood food = villagerFood.get(this.foodItem.getItem());
             if (food != null) {
@@ -144,11 +146,11 @@ public class EntityAIEatFood extends Goal {
     private void startEat() {
         this.eatTime = 80;
         this.villager.getNavigation().stop();
-        this.villager.equipActionItem(this.foodItem);
+        this.villager.setStackInHand(Hand.MAIN_HAND, this.foodItem);
     }
 
     private void stopEat() {
-        this.villager.unequipActionItem(this.foodItem);
+        this.villager.setStackInHand(Hand.MAIN_HAND, ItemStack.EMPTY);
     }
 
     public void stop() {
@@ -177,7 +179,7 @@ public class EntityAIEatFood extends Goal {
         }
 
         public void eat(FamiliarsEntity v, ItemStack foodItem) {
-            boolean isVFood = ModItems.isTaggedItem(foodItem, ItemTagType.VILLAGER);
+            /*boolean isVFood = ModItems.isTaggedItem(foodItem, ItemTagType.VILLAGER);
 
             int hunger = getHunger(v);
             if (!isVFood) {
@@ -194,14 +196,15 @@ public class EntityAIEatFood extends Goal {
                 this.postEat.accept(v, foodItem);
             }
             v.debugOut("Eating Food " + foodItem.getItem().getTranslationKey());
-            v.addRecentEat(this.item);
+            v.addRecentEat(this.item);*/
         }
 
         public int getHappy(FamiliarsEntity villager) {
-            int recentEatModifier = villager.getRecentEatModifier(this.item);
+            /*int recentEatModifier = villager.getRecentEatModifier(this.item);
 
 
-            return Math.max(this.happy + recentEatModifier, -3);
+            return Math.max(this.happy + recentEatModifier, -3);*/
+            return 1;
         }
 
 
@@ -215,4 +218,3 @@ public class EntityAIEatFood extends Goal {
         }
     }
 }
-*/

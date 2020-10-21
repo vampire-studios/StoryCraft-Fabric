@@ -3,9 +3,9 @@ package io.github.paradoxicalblock.storycraft.util;
 import io.github.paradoxicalblock.storycraft.main.StoryCraft;
 import net.fabricmc.fabric.api.entity.FabricEntityTypeBuilder;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityCategory;
 import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.SpawnGroup;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.SpawnEggItem;
@@ -18,7 +18,7 @@ public class EntityRegistryBuilder<E extends Entity> {
 
     private EntityType.EntityFactory<E> entityFactory;
 
-    private EntityCategory category;
+    private SpawnGroup category;
 
     private int trackingDistance;
     private int updateIntervalTicks;
@@ -39,7 +39,7 @@ public class EntityRegistryBuilder<E extends Entity> {
         return this;
     }
 
-    public EntityRegistryBuilder<E> category(EntityCategory category) {
+    public EntityRegistryBuilder<E> category(SpawnGroup category) {
         this.category = category;
         return this;
     }

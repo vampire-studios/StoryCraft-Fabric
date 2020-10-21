@@ -1,3 +1,9 @@
+/*
+ * Decompiled with CFR 0.149.
+ * 
+ * Could not load the following classes:
+ *  net.minecraft.util.math.BlockPos
+ */
 package io.github.paradoxicalblock.storycraft.pathing;
 
 import net.minecraft.util.math.BlockPos;
@@ -12,7 +18,6 @@ public class PathingCell {
         this(bp.getX(), bp.getY(), bp.getZ(), level);
     }
 
-
     private PathingCell(int x, int y, int z, byte level) {
         this.x = x;
         this.y = y;
@@ -20,35 +25,38 @@ public class PathingCell {
         this.level = level;
     }
 
-    public static int hashCode(int x, int z) {
-        return 31 * x + z;
-    }
-
     public BlockPos getBlockPos() {
         return new BlockPos(this.x, this.y, this.z);
     }
 
     public PathingCell up() {
-        return up((byte) 1);
+        return this.up((byte)1);
     }
 
     public PathingCell up(byte levels) {
-        return new PathingCell(this.x >> levels, this.y >> levels, this.z >> levels, (byte) (this.level + levels));
+        return new PathingCell(this.x >> levels, this.y >> levels, this.z >> levels, (byte)(this.level + levels));
     }
 
     public boolean equals(Object o) {
         if (!(o instanceof PathingCell)) {
             return false;
         }
-        PathingCell other = (PathingCell) o;
-        return (this.x == other.x && this.y == other.y && this.z == other.z && this.level == other.level);
+        PathingCell other = (PathingCell)o;
+        return this.x == other.x && this.y == other.y && this.z == other.z && this.level == other.level;
     }
 
     public String toString() {
         return "[" + this.level + "][" + this.x + ", " + this.y + ", " + this.z + "]";
     }
 
+    public static int hashCode(int x, int z) {
+        int result = x;
+        result = 31 * result + z;
+        return result;
+    }
+
     public int hashCode() {
-        return hashCode(this.x, this.z);
+        return PathingCell.hashCode(this.x, this.z);
     }
 }
+

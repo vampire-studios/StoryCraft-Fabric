@@ -59,10 +59,13 @@ public class QuestDataManager implements SimpleResourceReloadListener<QuestDataM
                     InputStreamReader reader = new InputStreamReader(manager.getResource(id).getInputStream());
                     quests.add(GSON.fromJson(reader, Quest.class));
                 } catch (JsonIOException | JsonSyntaxException ex) {
+                    ex.printStackTrace();
                     StoryCraft.LOGGER.error("[StoryCraft:QuestDataManager] Error while parsing resource '{}'", id, ex);
                 } catch (IOException ex) {
+                    ex.printStackTrace();
                     StoryCraft.LOGGER.error("[StoryCraft:QuestDataManager] Error reading resource '{}'", id, ex);
                 } catch (Exception ex) {
+                    ex.printStackTrace();
                     StoryCraft.LOGGER.error("[StoryCraft:QuestDataManager] Error loading resource '{}'", id, ex);
                 }
             }
@@ -71,7 +74,7 @@ public class QuestDataManager implements SimpleResourceReloadListener<QuestDataM
         public void apply() {
             for(Quest quest : this.quests) {
                 QuestManager.registerQuest(quest);
-                System.out.println(String.format("Registered a quest called %s for the profession %s", quest.getRegistryName(), quest.getProfession()));
+                StoryCraft.LOGGER.info("Registered a quest called %s for the profession {} {}", quest.getRegistryName(), quest.getProfession());
             }
         }
 

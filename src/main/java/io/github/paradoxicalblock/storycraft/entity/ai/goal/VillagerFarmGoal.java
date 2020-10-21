@@ -6,12 +6,12 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.CropBlock;
 import net.minecraft.entity.ai.goal.MoveToTargetPosGoal;
-import net.minecraft.inventory.BasicInventory;
+import net.minecraft.inventory.SimpleInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.GameRules;
-import net.minecraft.world.IWorld;
+import net.minecraft.world.WorldAccess;
 import net.minecraft.world.WorldView;
 
 public class VillagerFarmGoal extends MoveToTargetPosGoal {
@@ -27,7 +27,7 @@ public class VillagerFarmGoal extends MoveToTargetPosGoal {
 
     public boolean canStart() {
         if (this.cooldown <= 0) {
-            if (!this.owner.world.getGameRules().getBoolean(GameRules.MOB_GRIEFING)) {
+            if (!this.owner.world.getGameRules().getBoolean(GameRules.DO_MOB_GRIEFING)) {
                 return false;
             }
 
@@ -47,17 +47,17 @@ public class VillagerFarmGoal extends MoveToTargetPosGoal {
         super.tick();
         this.owner.getLookControl().lookAt((double) this.targetPos.getX() + 0.5D, this.targetPos.getY() + 1, (double) this.targetPos.getZ() + 0.5D, 10.0F, (float) this.owner.getLookPitchSpeed());
         if (this.hasReached()) {
-            IWorld iWorld_1 = this.owner.world;
+            WorldAccess iWorld_1 = this.owner.world;
             BlockPos blockPos_1 = this.targetPos.up();
             BlockState blockState_1 = iWorld_1.getBlockState(blockPos_1);
             Block block_1 = blockState_1.getBlock();
             if (this.field_6456 == 0 && block_1 instanceof CropBlock && ((CropBlock) block_1).isMature(blockState_1)) {
                 iWorld_1.breakBlock(blockPos_1, true);
             } else if (this.field_6456 == 1 && blockState_1.isAir()) {
-                BasicInventory basicInventory_1 = this.owner.getInventory();
+                SimpleInventory basicInventory_1 = this.owner.getInventory();
 
-                for (int int_1 = 0; int_1 < basicInventory_1.getInvSize(); ++int_1) {
-                    ItemStack itemStack_1 = basicInventory_1.getInvStack(int_1);
+                for (int int_1 = 0; int_1 < basicInventory_1.getMaxCountPerStack(); ++int_1) {
+                    ItemStack itemStack_1 = basicInventory_1.getStack(int_1);
                     boolean boolean_1 = false;
                     if (!itemStack_1.isEmpty()) {
                         if (itemStack_1.getItem() == Items.WHEAT_SEEDS) {
@@ -78,7 +78,7 @@ public class VillagerFarmGoal extends MoveToTargetPosGoal {
                     if (boolean_1) {
                         itemStack_1.decrement(1);
                         if (itemStack_1.isEmpty()) {
-                            basicInventory_1.setInvStack(int_1, ItemStack.EMPTY);
+                            basicInventory_1.setStack(int_1, ItemStack.EMPTY);
                         }
                         break;
                     }

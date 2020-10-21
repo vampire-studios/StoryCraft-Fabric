@@ -9,7 +9,6 @@ import net.minecraft.util.math.Vec3i;
 import net.minecraft.world.World;
 import org.apache.commons.io.IOUtils;
 
-import javax.annotation.Nullable;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -64,7 +63,7 @@ public class Util {
         return gson.fromJson(Util.readResource(path), type);
     }
 
-    public static List<BlockPos> getNearbyBlocks(BlockPos origin, World world, @Nullable Class filter, int xzDist, int yDist) {
+    public static List<BlockPos> getNearbyBlocks(BlockPos origin, World world, Class filter, int xzDist, int yDist) {
         final List<BlockPos> pointsList = new ArrayList<>();
         for (int x = -xzDist; x <= xzDist; x++) {
             for (int y = -yDist; y <= yDist; y++) {
