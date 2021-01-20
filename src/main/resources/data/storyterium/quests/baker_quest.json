@@ -1,0 +1,60 @@
+{
+    "registry_name": "storyterium:baker_test",
+    "profession": "storyterium:baker",
+    "icon": {
+        "item": "minecraft:cake"
+    },
+    "task": [
+        {
+            "name": "Testing",
+            "description": "This is a test quest",
+            "requirement": {
+                "stack": {
+                    "item": "minecraft:iron_ore",
+                    "count": 10
+                }
+            },
+            "reward": {
+                "stack": {
+                    "item": "minecraft:cake",
+                    "count": 2
+                },
+                "experience": 10
+            }
+        },
+        {
+            "name": "Testing 2",
+            "description": "This is a test quest",
+            "requirement": {
+                "stack": {
+                    "item": "minecraft:iron_ore",
+                    "count": 10
+                }
+            },
+            "reward": {
+                "stack": {
+                    "item": "minecraft:cake",
+                    "count": 2
+                },
+                "experience": 10
+            }
+        },
+        {
+            "name": "Testing 3",
+            "description": "This is a test quest",
+            "requirement": {
+                "stack": {
+                    "item": "minecraft:iron_ore",
+                    "count": 10
+                }
+            },
+            "reward": {
+                "stack": {
+                    "item": "minecraft:cake",
+                    "count": 2
+                },
+                "experience": 10
+            }
+        }
+    ]
+}

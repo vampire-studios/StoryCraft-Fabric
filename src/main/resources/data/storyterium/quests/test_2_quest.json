@@ -1,0 +1,26 @@
+{
+    "registry_name": "storyterium:testing2",
+    "profession": "storyterium:baker",
+    "icon": {
+        "item": "minecraft:cake"
+    },
+    "task": [
+        {
+            "name": "Testing 2",
+            "description": "This is a test quest",
+            "requirement": {
+                "stack": {
+                    "item": "minecraft:iron_ore",
+                    "count": 10
+                }
+            },
+            "reward": {
+                "stack": {
+                    "item": "minecraft:cake",
+                    "count": 2
+                },
+                "experience": 10
+            }
+        }
+    ]
+}

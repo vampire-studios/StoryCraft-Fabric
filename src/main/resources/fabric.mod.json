@@ -1,31 +1,31 @@
 {
   "schemaVersion": 1,
-  "id": "storycraft",
+  "id": "storyterium",
   "version": "1.0.0",
 
-  "name": "StoryCraft",
+  "name": "Storyterium",
   "description": "",
   "authors": [
-    "ParadoxicalBlock"
+    "Vampire Studios"
   ],
 
   "license": "CC0-1.0",
-  "icon": "assets/storycraft/icon.png",
+  "icon": "assets/storyterium/icon.png",
 
   "environment": "*",
   "entrypoints": {
     "main": [
-      "io.github.paradoxicalblock.storycraft.main.StoryCraft"
+      "io.github.vampirestudios.storyterium.main.Storyterium"
     ],
     "client": [
-      "io.github.paradoxicalblock.storycraft.main.ClientCore"
+      "io.github.vampirestudios.storyterium.main.ClientCore"
     ],
-    "storycraft:quests": [
-      "io.github.paradoxicalblock.storycraft.quests.TestingQuest"
+    "storyterium:quests": [
+      "io.github.vampirestudios.storyterium.quests.TestingQuest"
     ]
   },
   "mixins": [
-    "storycraft.mixins.json"
+    "storyterium.mixins.json"
   ],
 
   "requires": {

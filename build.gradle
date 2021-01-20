@@ -58,7 +58,7 @@ dependencies {
 		exclude group: "net.fabricmc.fabric-api"
 	}
 
-	modApi ("io.github.cottonmc:LibGui:3.2.0+1.16.3") {
+	modApi ("io.github.cottonmc:LibGui:3.3.2+1.16.4") {
 		exclude group :"net.fabricmc.fabric-api"
 		exclude group:"io.github.prospector", module:"modmenu"
 	}
